@@ -1,0 +1,82 @@
+import React, { useState } from 'react';
+import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import axios from 'axios';
+
+const LoginPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    try {
+      // Gửi yêu cầu đăng nhập
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        username: email,
+        password,
+      });
+
+      // Lưu JWT token vào localStorage
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('username', email);
+      window.location.href = '/'; // Điều hướng sau khi đăng nhập thành công
+    } catch (err) {
+      // Xử lý lỗi nếu đăng nhập thất bại
+      setError('Invalid email or password');
+    }
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <Box textAlign="center" mt={5}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Welcome Back!
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary" gutterBottom>
+          Please sign in to your account
+        </Typography>
+      </Box>
+
+      {error && <Typography color="error" textAlign="center">{error}</Typography>}
+
+      <Box component="form" noValidate mt={3} onSubmit={handleLogin}>
+        <TextField
+          fullWidth
+          label="User Name"
+          type="text"
+          margin="normal"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <TextField
+          fullWidth
+          label="Password"
+          type="password"
+          margin="normal"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          size="large"
+          sx={{ mt: 3 }}
+          type="submit"
+        >
+          Login
+        </Button>
+
+        <Typography mt={2} textAlign="center">
+          Don't have an account? <a href="/register">Register here</a>
+        </Typography>
+      </Box>
+    </Container>
+  );
+};
+
+export default LoginPage;
