@@ -1,6 +1,11 @@
 // models/courseModel.js
 import db from "../config/db.js";
 
+// Get Number of courses
+export const getNumberOfCourses = async()=> {
+  const result = await db.query("SELECT COUNT(*) FROM courses") ;
+  return result.rows[0].count ;
+}
 
 export const getCourses = async () => {
     try {
@@ -21,7 +26,37 @@ export const getCourseById = async (id) => {
   }
 };
 
-// Cập nhật thông tin khóa học (có hỗ trợ cập nhật thumbnail)
+// Paging Course
+export const getPaginatedCourses = async (limit, offset) => {
+  // Truy vấn để lấy danh sách khóa học với limit và offset
+  const coursesQuery = `
+    SELECT * FROM courses
+    ORDER BY id
+    LIMIT $1 OFFSET $2
+  `;
+  const coursesResult = await db.query(coursesQuery, [limit, offset]);
+
+  // Truy vấn để lấy tổng số lượng khóa học
+  const countResult = await db.query('SELECT COUNT(*) FROM courses');
+  const totalItems = parseInt(countResult.rows[0].count, 10);
+
+  return {
+    courses: coursesResult.rows,
+    totalItems,
+  };
+};
+
+// Search thông tin khóa học 
+export const searchCourses = async (query) => {
+  const searchQuery = `%${query}%`; // Tìm kiếm bất kỳ vị trí nào trong chuỗi
+  const result = await db.query(
+    `SELECT * FROM courses WHERE name ILIKE $1 OR author ILIKE $1`,
+    [searchQuery]
+  );
+  return result.rows;
+};
+
+// PUT Cập nhật thông tin khóa học (có hỗ trợ cập nhật thumbnail) 
 export const updateCourse = async (id, name, instructor, description, thumbnail) => {
   console.log(thumbnail)
   try {
@@ -34,6 +69,41 @@ export const updateCourse = async (id, name, instructor, description, thumbnail)
     throw new Error("Error updating course");
   }
 };
+
+// PATCH cập nhập thông tin khóa học
+export const updateCoursePartial = async (id, updates) => {
+  // Tạo mảng chứa các phần của câu lệnh SET
+  const setClause = [];
+  const values = [];
+  let index = 1;
+
+  // Duyệt qua các trường cần cập nhật và tạo câu lệnh SET động
+  for (const [key, value] of Object.entries(updates)) {
+    setClause.push(`${key} = $${index}`);
+    values.push(value);
+    index++;
+  }
+
+  // Thêm id vào mảng values
+  values.push(id);
+
+  // Tạo câu lệnh truy vấn
+  const query = `
+    UPDATE courses
+    SET ${setClause.join(', ')}
+    WHERE id = $${index}
+    RETURNING *;
+  `;
+
+  try {
+    const result = await db.query(query, values);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Error executing update query:', error);
+    throw error;
+  }
+};
+
 
 // Thêm khóa học mới (hỗ trợ lưu thumbnail)
 export const addCourse = async (name, instructor, description, thumbnail) => {

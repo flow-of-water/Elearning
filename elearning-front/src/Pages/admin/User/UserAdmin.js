@@ -59,7 +59,7 @@ const UserTable = () => {
                                 <TableCell>{user.role}</TableCell>
                                 <TableCell>
                                     <Button color="primary" onClick={() => handleEdit(user)}>Change role</Button>
-                                    <Button onClick={() => handleDelete(user.id)} color="error">Delete</Button>
+                                    {/* <Button onClick={() => handleDelete(user.id)} color="error">Delete</Button> */}
                                 </TableCell>
                             </TableRow>
                         ))}

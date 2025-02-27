@@ -82,7 +82,6 @@ const EditCourse = () => {
       formData.append("name", courseData.name);
       formData.append("author", courseData.author);
       formData.append("description", courseData.description);
-      // Chỉ gửi file mới nếu có, nếu không, backend sẽ giữ nguyên ảnh cũ
       if (thumbnailFile) {
         formData.append("thumbnail", thumbnailFile);
       }
@@ -91,7 +90,7 @@ const EditCourse = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      navigate(`/admin/courses/${id}`); // Điều hướng về trang chi tiết khóa học sau khi cập nhật thành công
+      navigate(`/admin/courses/${id}`); 
     } catch (err) {
       console.error("Error updating course:", err);
       setError("Error updating course.");

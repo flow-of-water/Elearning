@@ -15,11 +15,15 @@ export const getUserByUsername = async (username) => {
   return result.rows[0];
 };
 
-// Lấy danh sách tất cả người dùng
 export const getAllUsers = async () => {
   const result = await db.query('SELECT * FROM users ORDER BY id ASC;');
   return result.rows;
 };
+
+export const getNumberOfUsers = async() => {
+  const result = await db.query("SELECT COUNT(*) FROM users") ;
+  return result.rows[0].count ;
+}
 
 export const getUserById = async (id) => {
   const query = 'SELECT * FROM users WHERE id = $1;';

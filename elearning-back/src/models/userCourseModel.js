@@ -14,6 +14,12 @@ export const createUserCourse = async (userId, courseId) => {
   return rows[0];
 };
 
+// Count the number of rows in user_course 
+export const getNumberOfEnrollments = async()=> {
+  const result = await db.query("SELECT COUNT(*) FROM user_course") ;
+  return result.rows[0].count ;
+}
+
 // Lấy tất cả các khóa học của một user
 export const getUserCoursesByUser = async (userId) => {
   const query = `

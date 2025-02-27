@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -8,6 +9,7 @@ import {
   Grid,
   Container,
   CircularProgress,
+  Pagination,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -18,14 +20,19 @@ const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const location = useLocation();
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(6); 
+  const [pageCount, setPageCount] = useState(1) ;
 
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/courses");
-        setCourses(response.data);
+        const response = await axios.get(`http://localhost:5000/api/courses?page=${page}`);
+        setCourses(response.data.courses);
+        setPageCount(response.data.totalPages)
       } catch (err) {
         console.error("Error fetching courses:", err);
         setError("Error fetching courses");
@@ -33,9 +40,17 @@ const CoursesPage = () => {
         setLoading(false);
       }
     };
+    if (location.state?.searchResults) {
+      setCourses(location.state.searchResults);
+      setLoading(false);
+    } else {
+      fetchCourses();
+    }
+  }, [location.state, page]);
 
-    fetchCourses();
-  }, []);
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   if (loading) {
     return (
@@ -67,6 +82,14 @@ const CoursesPage = () => {
           </Grid>
         ))}
       </Grid>
+
+      <Pagination
+        count={pageCount}
+        page={page}
+        onChange={handlePageChange}
+        color="primary"
+        sx={{ display: "flex", justifyContent: "center", mt: 4 }}
+      />
     </Container>
   );
 };

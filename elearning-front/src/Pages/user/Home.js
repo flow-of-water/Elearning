@@ -17,7 +17,7 @@ const HomePage = () => {
     async function fetchCourses() {
       try {
         const response = await axiosInstance.get("/courses");
-        setCourses(response.data);
+        setCourses(response.data.courses);
       } catch (error) {
         console.error("Error fetching courses:", error);
       }

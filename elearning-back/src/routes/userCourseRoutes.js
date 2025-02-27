@@ -4,9 +4,10 @@ import {
   getCoursesController,
   deleteUserCourseController,
   createUserCoursesFromCartController,
-  getCourseOverviewController
+  getCourseOverviewController,
+  getStatisticsController
 } from '../controllers/userCourseController.js';
-import { authMiddleware } from '../middleware/authorize.js';
+import { authMiddleware , adminMiddleware } from '../middleware/authorize.js';
 
 const router = express.Router();
 
@@ -17,6 +18,9 @@ router.post('/cart', authMiddleware, createUserCoursesFromCartController);
 
 // GET /api/user-course/:userId - Lấy tất cả User-Course của một user
 router.get('/user', authMiddleware, getCoursesController);
+
+// GET /api/user-course/statistics - Lấy thống kê hệ thống cho admin 
+router.get('/statistics',authMiddleware,adminMiddleware,getStatisticsController) ;
 
 router.get('/course-overview/:courseId', authMiddleware, getCourseOverviewController);
 // DELETE /api/user-course/:userId/:courseId - Xóa bản ghi user_course

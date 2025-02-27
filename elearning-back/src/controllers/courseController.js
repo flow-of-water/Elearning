@@ -1,5 +1,5 @@
 // controllers/courseController.js
-import { getCourses , getCourseById, updateCourse, addCourse, deleteCourse } from "../models/courseModel.js";
+import { getCourses, getCourseById, updateCourse, addCourse, deleteCourse, searchCourses, getPaginatedCourses , updateCoursePartial } from "../models/courseModel.js";
 import { deleteSectionsByCourseId } from "../models/courseSectionModel.js";
 
 function ImgArrayToBase64(courses) {
@@ -20,27 +20,43 @@ function ImgToBase64(course) {
   return course
 }
 
+
+
 export const getCoursesController = async (req, res) => {
-  
-    try {
-      var courses = await getCourses();
-      courses = ImgArrayToBase64(courses)
-      if (!courses) {
-        return res.status(404).json({ message: "Courses not found" });
-      }
-      res.json(courses);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Error courses" });
-    }
-  };
+  try {
+    // Lấy page và limit từ query params, với giá trị mặc định
+    const page = req.query.page? parseInt(req.query.page) : 1;
+    const limit = 6;
+
+    // Tính toán offset
+    const offset = (page - 1) * limit;
+
+    // Lấy dữ liệu phân trang từ model
+    var { courses, totalItems } = await getPaginatedCourses(limit, offset);
+    courses = ImgArrayToBase64(courses)
+
+    // Tính toán tổng số trang
+    const totalPages = Math.ceil(totalItems / limit);
+
+    // Trả về kết quả cho client
+    res.json({
+      courses,
+      totalItems,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 // Lấy thông tin khóa học theo ID
 export const getCourseByIdController = async (req, res) => {
   const { id } = req.params;
 
   try {
     var course = await getCourseById(id);
-    course = ImgToBase64(course) ;
+    course = ImgToBase64(course);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
@@ -51,14 +67,36 @@ export const getCourseByIdController = async (req, res) => {
   }
 };
 
+// Search thông tin khóa học 
+export const getCoursesBySearch = async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    var courses = await searchCourses(q);
+    courses = ImgArrayToBase64(courses);
+    res.json(courses);
+  } catch (error) {
+    console.error("Error searching courses:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 // Cập nhật thông tin khóa học
 export const updateCourseController = async (req, res) => {
   const { id } = req.params;
+  const updates = req.body ;
   const { name, author, description } = req.body;
   const thumbnail = req.file ? req.file.buffer : null;
+  if (req.file) {
+    updates.thumbnail = req.file.buffer;
+  }
 
   try {
-    const updatedCourse = await updateCourse(id, name, author, description, thumbnail);
+    // const updatedCourse = await updateCourse(id, name, author, description, thumbnail);
+    const updatedCourse = await updateCoursePartial(id,updates) ;
     if (!updatedCourse) {
       return res.status(404).json({ message: "Course not found" });
     }

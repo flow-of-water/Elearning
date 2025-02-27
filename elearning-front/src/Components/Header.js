@@ -3,6 +3,7 @@ import { AppBar, Toolbar, Typography, Button, Box, IconButton, Badge } from "@mu
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { CartContext } from "../Context/CartContext";
 import { Link } from "react-router-dom";
+import SearchBar from './SearchBar'
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,6 +35,7 @@ export default function Header() {
           E-Learning Platform
         </Typography>
 
+        <SearchBar />
         {/* Navigation */}
         <Box sx={{ display: "flex", gap: 2 }}>
           <Button color="inherit" component={Link} to="/courses">Courses</Button>

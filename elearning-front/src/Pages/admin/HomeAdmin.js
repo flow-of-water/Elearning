@@ -1,7 +1,22 @@
 import React from "react";
 import { Card, CardContent, Typography, Grid } from "@mui/material";
+import { useEffect , useState } from "react";
+import axiosInstance from "../../Api/axiosInstance";
 
 const AdminHome = () => {
+  const [totalUsers,setTotalUsers] = useState(0) ;
+  const [totalCourses,setTotalCourses] = useState(0) ;
+  const [totalEnrollments,setTotalEnrollments] = useState(0) ;
+
+  useEffect(()=>{
+    const fetch = async () => {
+      const response = await axiosInstance.get("/user-course/statistics") ;
+      setTotalUsers(response.data.totalUsers)
+      setTotalCourses(response.data.totalCourses)
+      setTotalEnrollments(response.data.totalEnrollments)
+    }
+    fetch() ;
+  },[])
   return (
       <div className="container mt-4">
         <Typography variant="h4" gutterBottom>
@@ -13,7 +28,7 @@ const AdminHome = () => {
             <Card className="shadow-sm">
               <CardContent>
                 <Typography variant="h6">Total Users</Typography>
-                <Typography variant="h4">1,250</Typography>
+                <Typography variant="h4">{totalUsers}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -23,7 +38,7 @@ const AdminHome = () => {
             <Card className="shadow-sm">
               <CardContent>
                 <Typography variant="h6">Total Courses</Typography>
-                <Typography variant="h4">35</Typography>
+                <Typography variant="h4">{totalCourses}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -33,7 +48,7 @@ const AdminHome = () => {
             <Card className="shadow-sm">
               <CardContent>
                 <Typography variant="h6">Total Enrollments</Typography>
-                <Typography variant="h4">8,432</Typography>
+                <Typography variant="h4">{totalEnrollments}</Typography>
               </CardContent>
             </Card>
           </Grid>

@@ -1,5 +1,6 @@
 import * as userCourseModel from '../models/userCourseModel.js';
 import * as courseModel from '../models/courseModel.js'
+import * as userModel from '../models/userModel.js'
 
 function ImgArrayToBase64(courses) {
   return courses.map(course => {
@@ -104,8 +105,9 @@ export const deleteUserCourseController = async (req, res) => {
   }
 };
 
-
+//
 // Các hàm liên quan đến 2 bảng Users , Courses
+//
 
 // Lấy danh sách các khóa học của một user
 export const getCoursesController = async (req, res) => {
@@ -158,3 +160,18 @@ export const getCourseOverviewController = async(req,res) => {
 }
 
 
+export const getStatisticsController = async(req,res) => {
+  try {
+    const totalUsers = await userModel.getNumberOfUsers() ;
+    const totalCourses = await courseModel.getNumberOfCourses() ;
+    const totalEnrollments = await userCourseModel.getNumberOfEnrollments() ;
+    return res.status(200).json({
+      totalCourses,
+      totalEnrollments,
+      totalUsers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+}

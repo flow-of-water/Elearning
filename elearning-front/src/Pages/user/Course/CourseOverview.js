@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
-  Container, Typography, Card, CardMedia, CardContent, Button, CircularProgress, 
+  Container, Typography, Card, CardMedia, CardContent, Box, Button, CircularProgress, 
   Alert, Rating, List, ListItem, ListItemText, Divider 
 } from "@mui/material";
 import axiosInstance from "../../../Api/axiosInstance";
@@ -74,7 +74,10 @@ const CourseOverview = () => {
           <Typography variant="h6" sx={{ mt: 2 }}>
             Student Ratings:
           </Typography>
-          <Rating value={averageRating} precision={0.1} readOnly />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {averageRating&&<Typography variant="body1" fontWeight="bold" sx={{color: "#faaf00" , fontSize:"18px"}}>{Number(averageRating).toFixed(1)}</Typography>}
+            <Rating value={averageRating} precision={0.1} readOnly />
+          </div>
           <Typography variant="body2" color="text.secondary">
             ({totalReviews} reviews)
           </Typography>
