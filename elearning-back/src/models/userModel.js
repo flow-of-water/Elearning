@@ -2,8 +2,8 @@ import db from "../config/db.js";
 
 export const createUser = async (username, hashedPassword) => {
   const result = await db.query(
-    "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *",
-    [username, hashedPassword]
+    "INSERT INTO users (username, password,role) VALUES ($1, $2, $3) RETURNING *",
+    [username, hashedPassword,"user"]
   );
   return result.rows[0];
 };

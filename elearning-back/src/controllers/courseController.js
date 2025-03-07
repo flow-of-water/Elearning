@@ -1,6 +1,7 @@
 // controllers/courseController.js
 import { getCourses, getCourseById, updateCourse, addCourse, deleteCourse, searchCourses, getPaginatedCourses , updateCoursePartial } from "../models/courseModel.js";
 import { deleteSectionsByCourseId } from "../models/courseSectionModel.js";
+import { getOverviewRatingByCourseId } from "../models/userCourseModel.js";
 
 function ImgArrayToBase64(courses) {
   return courses.map(course => {
@@ -28,17 +29,20 @@ export const getCoursesController = async (req, res) => {
     const page = req.query.page? parseInt(req.query.page) : 1;
     const limit = 6;
 
-    // Tính toán offset
+    // Cal offset
     const offset = (page - 1) * limit;
 
-    // Lấy dữ liệu phân trang từ model
     var { courses, totalItems } = await getPaginatedCourses(limit, offset);
     courses = ImgArrayToBase64(courses)
 
-    // Tính toán tổng số trang
     const totalPages = Math.ceil(totalItems / limit);
 
-    // Trả về kết quả cho client
+    // Rating for each course 
+    for (const course of courses) {
+      const overview = await getOverviewRatingByCourseId(course.id);
+      course.average_rating = overview.average_rating;
+      course.total_rating = overview.total_rating;
+    }
     res.json({
       courses,
       totalItems,

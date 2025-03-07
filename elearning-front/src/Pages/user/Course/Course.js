@@ -22,8 +22,8 @@ const CoursesPage = () => {
   const [error, setError] = useState("");
   const location = useLocation();
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(6); 
-  const [pageCount, setPageCount] = useState(1) ;
+  const [pageSize] = useState(6);
+  const [pageCount, setPageCount] = useState(1);
 
   const { addToCart } = useContext(CartContext);
 
@@ -83,13 +83,15 @@ const CoursesPage = () => {
         ))}
       </Grid>
 
-      <Pagination
-        count={pageCount}
-        page={page}
-        onChange={handlePageChange}
-        color="primary"
-        sx={{ display: "flex", justifyContent: "center", mt: 4 }}
-      />
+      {courses.length != 0 &&
+        <Pagination
+          count={pageCount}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+          sx={{ display: "flex", justifyContent: "center", mt: 4 }}
+        />
+      }
     </Container>
   );
 };

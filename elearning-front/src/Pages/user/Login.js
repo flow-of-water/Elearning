@@ -20,9 +20,9 @@ const LoginPage = () => {
       // Lưu JWT token vào localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', email);
+      localStorage.setItem('userId' , response.data.id) ;
       window.location.href = '/'; // Điều hướng sau khi đăng nhập thành công
     } catch (err) {
-      // Xử lý lỗi nếu đăng nhập thất bại
       setError('Invalid email or password');
     }
   };

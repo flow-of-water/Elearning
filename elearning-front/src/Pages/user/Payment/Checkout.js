@@ -40,7 +40,7 @@ const CheckoutPage = () => {
                 <ListItem key={index}>
                   <ListItemText
                     primary={item.name}
-                    secondary={`Price: $${item.price}`}
+                    secondary={`Price: $${item.price?item.price:0}`}
                   />
                 </ListItem>
               ))}

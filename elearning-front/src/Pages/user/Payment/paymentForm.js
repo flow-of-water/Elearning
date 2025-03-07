@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Container, Typography, Button, Box, CircularProgress } from '@mui/material';
 import axiosInstance from '../../../Api/axiosInstance';
+import {CartContext} from "../../../Context/CartContext.js"
 
 const PaymentForm = ({ totalAmount, courseIds }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [message, setMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const { clearCart } = useContext(CartContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +34,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
         setMessage('Order processed as free. Payment succeeded!');
         localStorage.removeItem('cartItems');
         setIsProcessing(false);
+        clearCart() ;
         return;
       }
 
@@ -52,6 +55,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
         setMessage('Payment succeeded!');
         localStorage.removeItem('cartItems');
         console.log(result.paymentIntent);
+        clearCart() ;
       }
     } catch (error) {
       setMessage('Payment failed. Please try again.');
