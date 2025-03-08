@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, TextField, Container, Typography, Box } from "@mui/material";
-import axios from "axios";
+import axiosInstance from "../../Api/axiosInstance";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -30,7 +30,7 @@ const RegisterPage = () => {
     }
   
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/register", {
+      const response = await axiosInstance.post("/auth/register", {
         username: formData.username,
         password: formData.password,
       });

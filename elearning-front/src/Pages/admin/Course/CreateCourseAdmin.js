@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Typography, TextField, Button, Paper, Snackbar, Alert, Input } from "@mui/material";
-import axios from "axios";
+import axiosInstance from "../../../Api/axiosInstance";
 
 const CreateCourseAdmin = () => {
   const [name, setName] = useState("");
@@ -40,7 +40,7 @@ const CreateCourseAdmin = () => {
         return;
       }
 
-      const response = await axios.post("http://localhost:5000/api/courses", formData, {
+      const response = await axiosInstance.post("/courses", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           "Authorization": `Bearer ${token}`,

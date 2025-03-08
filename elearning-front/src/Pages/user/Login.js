@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import axios from 'axios';
+import axiosInstance from '../../Api/axiosInstance';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -12,7 +12,7 @@ const LoginPage = () => {
     
     try {
       // Gửi yêu cầu đăng nhập
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axiosInstance.post('/auth/login', {
         username: email,
         password,
       });
@@ -21,6 +21,7 @@ const LoginPage = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', email);
       localStorage.setItem('userId' , response.data.id) ;
+      localStorage.setItem('userRole' , response.data.role) ;
       window.location.href = '/'; // Điều hướng sau khi đăng nhập thành công
     } catch (err) {
       setError('Invalid email or password');

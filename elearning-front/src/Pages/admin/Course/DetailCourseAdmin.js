@@ -13,7 +13,7 @@ import {
   TableRow,
   CircularProgress,
 } from "@mui/material";
-import axios from "axios";
+import axiosInstance from "../../../Api/axiosInstance";
 
 const DetailCourseAdmin = () => {
   const { id } = useParams();
@@ -26,12 +26,12 @@ const DetailCourseAdmin = () => {
     const fetchCourseDetails = async () => {
       try {
         const token = localStorage.getItem("token"); // Lấy token từ localStorage
-        const response = await axios.get(`http://localhost:5000/api/courses/${id}`, {
+        const response = await axiosInstance.get(`/courses/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         // Giả sử API trả về đối tượng course bao gồm cả mảng sections
         setCourse(response.data);
-        const response2 = await axios.get(`http://localhost:5000/api/course_sections/course/${id}`, {
+        const response2 = await axiosInstance.get(`/course_sections/course/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSections(response2.data)

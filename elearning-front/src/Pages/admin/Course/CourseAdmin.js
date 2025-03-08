@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Pagination } from "@mui/material";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import axiosInstance from "../../../Api/axiosInstance"
 
 const CourseAdmin = () => {

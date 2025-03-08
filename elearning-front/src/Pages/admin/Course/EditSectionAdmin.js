@@ -8,7 +8,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
-import axios from "axios";
+import axiosInstance from "../../../Api/axiosInstance";
 
 const EditCourseSection = () => {
   const { id } = useParams(); // Lấy id từ URL
@@ -22,7 +22,7 @@ const EditCourseSection = () => {
     const fetchSection = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(`http://localhost:5000/api/course_sections/${id}`, {
+        const response = await axiosInstance.get(`/course_sections/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setSection(response.data);
@@ -51,9 +51,7 @@ const EditCourseSection = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`http://localhost:5000/api/course_sections/${id}`, section, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosInstance.put(`/course_sections/${id}`, section);
       navigate(-1); // Quay lại trang trước đó sau khi cập nhật thành công
     } catch (err) {
       console.error("Error updating section:", err);

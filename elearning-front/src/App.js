@@ -16,6 +16,7 @@ import CheckoutForm from './Pages/user/Payment/checkPage'
 
 // Admin Pages
 import AdminLayout from './Layouts/AdminLayout';
+import ProtectedRoute from './Layouts/ProtectedRoute';
 import AdminHome from './Pages/admin/HomeAdmin';
 import CourseAdmin from './Pages/admin/Course/CourseAdmin'
 import DetailCourseAdmin from './Pages/admin/Course/DetailCourseAdmin';
@@ -39,25 +40,28 @@ function App() {
         <Route path="/register" element={<UserLayout><RegisterPage /></UserLayout>} />
 
         <Route path="/courses" element={<UserLayout><CoursesPage /></UserLayout>} />
-        <Route path="/courses/overview/:id" element={<UserLayout><CourseOverview /></UserLayout>} />  
-        <Route path="/courses/:id" element={<UserLayout><CourseDetail /></UserLayout>} />  
+        <Route path="/courses/overview/:id" element={<UserLayout><CourseOverview /></UserLayout>} />
+        <Route path="/courses/:id" element={<UserLayout><CourseDetail /></UserLayout>} />
 
-        <Route path="/courses-user" element={<UserLayout><CourseUser /></UserLayout>} />  
-        
-        <Route path="/payment" element={<UserLayout><CheckoutForm /></UserLayout>} />  
-        <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />  
+        <Route path="/courses-user" element={<UserLayout><CourseUser /></UserLayout>} />
+
+        <Route path="/payment" element={<UserLayout><CheckoutForm /></UserLayout>} />
+        <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
 
         {/* Admin  */}
-        <Route path="/admin" element={<AdminLayout><AdminHome /></AdminLayout>} />
-        <Route path="/admin/courses" element={<AdminLayout><CourseAdmin /></AdminLayout>} />
-        <Route path="/admin/courses/:id" element={<AdminLayout><DetailCourseAdmin /></AdminLayout>} />
-        <Route path="/admin/courses/create" element={<AdminLayout><CreateCourseAdmin /></AdminLayout>} />
-        <Route path="/admin/courses/sections/:id" element={<AdminLayout><CourseSectionAdmin /></AdminLayout>} />
-        <Route path="/admin/courses/sections/:id/edit" element={<AdminLayout><EditSectionAdmin /></AdminLayout>} />
-        <Route path="/admin/courses/edit/:id" element={<AdminLayout><EditCourseAdmin /></AdminLayout>} />
-        
-        <Route path="/admin/users" element={<AdminLayout><UserAdmin /></AdminLayout>} />
-        
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin" element={<AdminLayout><AdminHome /></AdminLayout>} />
+          <Route path="/admin/courses" element={<AdminLayout><CourseAdmin /></AdminLayout>} />
+          <Route path="/admin/courses/:id" element={<AdminLayout><DetailCourseAdmin /></AdminLayout>} />
+          <Route path="/admin/courses/create" element={<AdminLayout><CreateCourseAdmin /></AdminLayout>} />
+          <Route path="/admin/courses/sections/:id" element={<AdminLayout><CourseSectionAdmin /></AdminLayout>} />
+          <Route path="/admin/courses/sections/:id/edit" element={<AdminLayout><EditSectionAdmin /></AdminLayout>} />
+          <Route path="/admin/courses/edit/:id" element={<AdminLayout><EditCourseAdmin /></AdminLayout>} />
+
+          <Route path="/admin/users" element={<AdminLayout><UserAdmin /></AdminLayout>} />
+        </Route>
+        {/* 404 */}
+        <Route path="*" element={<UserLayout><img src="/404.jpeg" alt="404 Not Found" style={{ maxWidth: "100%", height: "auto" }} /> </UserLayout>} />
       </Routes>
     </Router>
   );
