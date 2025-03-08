@@ -12,7 +12,7 @@ import {
   Pagination,
 } from "@mui/material";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../../Api/axiosInstance";
 import CourseCard from "../../../Components/CourseCard";
 import { CartContext } from "../../../Context/CartContext";
 
@@ -30,7 +30,7 @@ const CoursesPage = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/courses?page=${page}`);
+        const response = await axiosInstance.get(`/courses?page=${page}`);
         setCourses(response.data.courses);
         setPageCount(response.data.totalPages)
       } catch (err) {

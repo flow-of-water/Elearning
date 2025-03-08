@@ -21,12 +21,15 @@ import stripeRoutes from "./src/routes/stripeRoutes.js"
 
 
 const app = express()
-const port = 5000;
+const port = process.env.PORT ||5000;
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
+app.get("/",(req,res)=> {
+  res.send("Backend of The Last Water Bender is working. I'll teach you anything you want !") ;
+})
 
 app.use('/webhook',stripeRoutes);
 app.use("/api/auth", authRoutes);
