@@ -6,7 +6,7 @@ import CourseVideoPlayer from "../../../Components/CourseVideoPlayer";
 import CourseSidebar from '../../../Components/CourseSideBar';
 import Comments from "../../../Components/Comments";
 function imageProgress(course) {
-  return course.thumbnail ? `data:image/png;base64,${course.thumbnail}` : "https://seocom.agency/wp-content/uploads/2024/05/Errores-Web-404-403-503-502-401.-Significado-y-soluciones-1.jpg.webp"
+  return course.thumbnail ? `data:image/png;base64,${course.thumbnail}` : "/Errores-Web-404.jpg"
 }
 
 const drawerWidth = 240;

@@ -2,20 +2,20 @@
 import db from "../config/db.js";
 
 // Get Number of courses
-export const getNumberOfCourses = async()=> {
-  const result = await db.query("SELECT COUNT(*) FROM courses") ;
-  return result.rows[0].count ;
+export const getNumberOfCourses = async () => {
+  const result = await db.query("SELECT COUNT(*) FROM courses");
+  return result.rows[0].count;
 }
 
 export const getCourses = async () => {
-    try {
-      const result = await db.query("SELECT * FROM courses");
-      return result.rows;  // Trả về thông tin khóa học nếu tìm thấy
-    } catch (err) {
-      throw new Error("Error courses");
-    }
-  };
-  
+  try {
+    const result = await db.query("SELECT * FROM courses");
+    return result.rows;  // Trả về thông tin khóa học nếu tìm thấy
+  } catch (err) {
+    throw new Error("Error courses");
+  }
+};
+
 // Truy vấn thông tin khóa học theo ID
 export const getCourseById = async (id) => {
   try {
@@ -55,6 +55,11 @@ export const searchCourses = async (query) => {
   );
   return result.rows;
 };
+export const searchCourseInSentences = async (sentence,limit=5) => {
+  var query = `SELECT name, price, description, author FROM courses WHERE $1 ILIKE '%' || name || '%'  LIMIT $2 ;`
+  const result = await db.query(query,[sentence,limit]) ;
+  return result.rows;
+}
 
 // PUT Cập nhật thông tin khóa học (có hỗ trợ cập nhật thumbnail) 
 export const updateCourse = async (id, name, instructor, description, thumbnail) => {

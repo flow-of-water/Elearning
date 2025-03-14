@@ -29,7 +29,7 @@ const Chatbot = () => {
     setMessages([...messages, userMessage]);
 
     try {
-      const response = await axiosInstance.post("/chatbot/generate", {
+      const response = await axiosInstance.post("/chatbot/generate2", {
         prompt: input,
       });
 
