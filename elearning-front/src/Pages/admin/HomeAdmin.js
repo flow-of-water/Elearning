@@ -1,6 +1,7 @@
 import React from "react";
 import { Card, CardContent, Typography, Grid } from "@mui/material";
 import { useEffect , useState } from "react";
+import StripeChart from "../../Components/StripeChart.js"
 import axiosInstance from "../../Api/axiosInstance";
 
 const AdminHome = () => {
@@ -53,6 +54,8 @@ const AdminHome = () => {
             </Card>
           </Grid>
         </Grid>
+
+        <StripeChart />
       </div>
   );
 };

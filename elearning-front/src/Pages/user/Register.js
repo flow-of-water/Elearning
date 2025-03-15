@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, TextField, Container, Typography, Box } from "@mui/material";
 import axiosInstance from "../../Api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -8,19 +9,19 @@ const RegisterPage = () => {
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate() ;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-/* eslint-disable */
   const handleRegister = async (e) => {
     e.preventDefault();
-  
-    if (formData.username==="") {
+
+    if (formData.username === "") {
       alert("Please enter username");
       return;
     }
-    if (formData.password==="") {
+    if (formData.password === "") {
       alert("Please enter password");
       return;
     }
@@ -28,18 +29,22 @@ const RegisterPage = () => {
       alert("Passwords do not match!");
       return;
     }
-  
+
     try {
       const response = await axiosInstance.post("/auth/register", {
         username: formData.username,
         password: formData.password,
       });
-  
+
       alert("Registration successful!");
+      navigate("/login");
     } catch (error) {
       console.error("Registration failed", error);
-      alert(`Error: ${error.response?.data?.message || "Something went wrong"}`);
-      alert(`${formData.username}  ${formData.password}`)
+      if (error.response && error.response.data) alert("Username already exists. Please choose another username!")
+      else {
+        alert(`Error: ${error.response?.data?.message || "Something went wrong"}`);
+        alert(`${formData.username}  ${formData.password}`)
+      }
     }
   };
 
