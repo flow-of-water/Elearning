@@ -12,7 +12,7 @@ const RevenueChart = () => {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axiosInstance.get("/payment/stats");
+                const response = await axiosInstance.get("/payments/stats");
                 setDataPayment(response.data.revenueByDay);
                 setDataCustomer(response.data.customersByDay);
                 setLoading(false);
