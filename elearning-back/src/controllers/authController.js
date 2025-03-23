@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, getUserByUsername } from "../models/userModel.js";
+import { createUser, getUserByUsername, findOrCreateUser } from "../models/userModel.js";
 
 const saltRounds = 10;
 const jwtSecret = process.env.JWT_SECRET || "your_jwt_secret";
 
-// Đăng ký
+// Sign up - Đăng ký
 export const register = async (req, res) => {
   const { username, password } = req.body;
 
@@ -18,7 +18,7 @@ export const register = async (req, res) => {
   }
 };
 
-// Đăng nhập
+// Sign in - Đăng nhập
 export const login = async (req, res) => {
   const { username, password } = req.body;
 
@@ -34,4 +34,36 @@ export const login = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
   }
+};
+
+
+// ___ OAuth ___
+// Google
+export const googleCallback = async (req, res) => {
+  const user = await findOrCreateUser(req.user); // req.user chính là Googleuser 
+  const token = jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '48h' }
+  );
+
+  res.redirect(process.env.FRONT_END_URL + `/login/success?token=${token}&username=${user.username}&userid=${user.id}&role=${user.role}`);
+};
+export const facebookCallback = async(req, res) => {
+  const user = await findOrCreateUser(req.user);
+  const token = jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '48h' }
+  );
+
+  res.redirect(`${process.env.FRONT_END_URL}/login/success?token=${token}&username=${user.username}&userid=${user.id}&role=${user.role}`);
 };

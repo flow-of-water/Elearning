@@ -65,3 +65,19 @@ export const updateUserRole = async (id, role) => {
   const result = await db.query(query, values);
   return result.rows[0];
 };
+
+
+// OAuth serve
+export async function findOrCreateUser(profile) {
+  const email = profile.email;
+  const name = profile.username;
+
+  let user = await db.query('SELECT * FROM users WHERE username = $1', [email]);
+  if (user.rows.length > 0) return user.rows[0];
+
+  const newUser = await db.query(
+    'INSERT INTO users(username, password, role) VALUES($1, $2, $3) RETURNING *',
+    [email, email, 'user']
+  );
+  return newUser.rows[0];
+}

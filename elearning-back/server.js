@@ -3,21 +3,19 @@ import bodyParser from "body-parser"
 import cors from "cors"
 // routes
 import authRoutes from "./src/routes/authRoutes.js";
+import authGoogleRoutes from './src/routes/authGoogleRoutes.js';
+import authFacebookRoutes from './src/routes/authFacebookRoutes.js';
 import courseRoutes from "./src/routes/courseRoutes.js"
 import courseSectionRoutes from "./src/routes/courseSectionRoutes.js"
 import userRoutes from "./src/routes/userRoutes.js"
 import paymentRoutes from "./src/routes/paymentRoutes.js"
 import userCourseRoutes from './src/routes/userCourseRoutes.js';
 import chatBotRoutes from './src/routes/chatBotRoutes.js';
-import commentRoutes from './src/routes/commentRoutes.js'
-
+import commentRoutes from './src/routes/commentRoutes.js';
 // Stripe 
 import stripeRoutes from "./src/routes/stripeRoutes.js"
-
-
-
-
-
+// OAuth
+import passport from 'passport';
 
 
 const app = express()
@@ -26,6 +24,10 @@ const port = process.env.PORT ||5000;
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(passport.initialize());
+
+
+
 
 app.get("/",(req,res)=> {
   res.send("Backend of The Last Water Bender is working. I'll teach you anything you want !") ;
@@ -33,6 +35,8 @@ app.get("/",(req,res)=> {
 
 app.use('/webhook',stripeRoutes);
 app.use("/api/auth", authRoutes);
+app.use('/api/auth_google',authGoogleRoutes); 
+app.use('/api/auth_facebook',authFacebookRoutes) ;
 app.use("/api/courses" , courseRoutes) ;
 app.use("/api/course_sections" , courseSectionRoutes) ;
 app.use("/api/users",userRoutes)

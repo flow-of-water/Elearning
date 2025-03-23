@@ -13,6 +13,8 @@ import CourseOverview from './Pages/user/Course/CourseOverview';
 // User Payment 
 import Cart from './Pages/user/Payment/Cart';
 import CheckoutForm from './Pages/user/Payment/checkPage'
+// OAuth
+import OAuthLoginSuccess from './Pages/user/OAuth/OAuthLoginSuccess';
 
 // Admin Pages
 import AdminLayout from './Layouts/AdminLayout';
@@ -47,6 +49,7 @@ function App() {
 
         <Route path="/payment" element={<UserLayout><CheckoutForm /></UserLayout>} />
         <Route path="/cart" element={<UserLayout><Cart /></UserLayout>} />
+        <Route path="/login/success" element={<UserLayout><OAuthLoginSuccess /></UserLayout>} />
 
         {/* Admin  */}
         <Route element={<ProtectedRoute />}>

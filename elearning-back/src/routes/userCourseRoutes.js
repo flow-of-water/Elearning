@@ -5,7 +5,8 @@ import {
   deleteUserCourseController,
   createUserCoursesFromCartController,
   getCourseOverviewController,
-  getStatisticsController
+  getStatisticsController,
+  updateUserCourseRatingController,
 } from '../controllers/userCourseController.js';
 import { authMiddleware , adminMiddleware } from '../middleware/authorize.js';
 
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // POST /api/user-course - Tạo mới bản ghi user_course
 router.post('/', authMiddleware, createUserCourseController);
+router.patch('/rating',authMiddleware,updateUserCourseRatingController);
 
 router.post('/cart', authMiddleware, createUserCoursesFromCartController);
 

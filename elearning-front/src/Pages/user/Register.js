@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Button, TextField, Container, Typography, Box } from "@mui/material";
+import { Button, TextField, Container, Typography, Box, Divider } from "@mui/material";
 import axiosInstance from "../../Api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import OAuthLoginButtons from '../../Components/OAuthLoginButtons.js';
+
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -64,6 +66,8 @@ const RegisterPage = () => {
         <Button fullWidth variant="contained" color="primary" size="large" sx={{ mt: 3 }} onClick={handleRegister}>
           Register
         </Button>
+        <Divider sx={{ my: 3 }}>or login with</Divider>
+        <OAuthLoginButtons/>
       </Box>
     </Container>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import { Button, TextField, Container, Typography, Box, Divider } from '@mui/material';
 import axiosInstance from '../../Api/axiosInstance';
+import OAuthLoginButtons from '../../Components/OAuthLoginButtons.js';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -71,7 +72,10 @@ const LoginPage = () => {
         >
           Login
         </Button>
-
+        
+        <Divider sx={{ my: 3 }}>or</Divider>
+        <OAuthLoginButtons/>
+        
         <Typography mt={2} textAlign="center">
           Don't have an account? <a href="/register">Register here</a>
         </Typography>

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { 
   Container, Typography, Card, CardMedia, CardContent, Box, Button, CircularProgress, 
-  Alert, Rating, List, ListItem, ListItemText, Divider 
+  Alert, Rating, List, ListItem, ListItemText, Divider, Snackbar , TextField
 } from "@mui/material";
 import axiosInstance from "../../../Api/axiosInstance";
 import { CartContext } from "../../../Context/CartContext";
@@ -13,12 +13,62 @@ function imageProgress(course) {
     : "/Errores-Web-404.jpg";
 }
 
-// Mock data đánh giá từ học viên
-const mockReviews = [
-  { id: 1, student: "Nguyễn Văn A", rating: 5, comment: "Khóa học rất hay, hướng dẫn chi tiết!" },
-  { id: 2, student: "Trần Thị B", rating: 4, comment: "Nội dung đầy đủ nhưng có vài chỗ hơi nhanh." },
-  { id: 3, student: "Lê Hoàng C", rating: 3, comment: "Khóa học ổn, nhưng cần cập nhật thêm bài giảng mới." },
-];
+function RatingBox({ courseId , initialRating = null, initialReview = "" , setMyRating, setMyComment}) {
+  const [rating, setRating] = useState(initialRating);
+  const [review, setReview] = useState(initialReview);
+  const [submitted, setSubmitted] = useState(initialRating !== null || initialReview !== "");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+  const handleSubmit = async () => {
+    if (rating) {
+      const response = await axiosInstance.patch("/user-course/rating",{
+        courseId:courseId , rating , comment:review
+      });
+      setSubmitted(true);
+      setOpenSnackbar(true);
+      setMyRating(rating);
+      setMyComment(review) ;
+    }
+  };
+
+  return (
+    <Box sx={{ p: 2, border: "1px solid #ddd", borderRadius: 2}}>
+      <Typography variant="h6">Your rating</Typography>
+      <Rating
+        value={rating}
+        onChange={(event, newValue) => setRating(newValue)}
+        precision={1}
+      />
+      <TextField
+        fullWidth
+        multiline
+        rows={2}
+        variant="outlined"
+        margin="normal"
+        label="Enter review"
+        value={review}
+        onChange={(e) => setReview(e.target.value)}
+      />
+      <Box mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+          disabled={!rating}
+        >
+          {submitted ? "Update rating" : "Send Rating"}
+        </Button>
+      </Box>
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
+        <Alert severity="success" onClose={() => setOpenSnackbar(false)}>
+          {submitted ? "Rating is updated!" : "Rating is sent!"}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+}
+
+
 
 const CourseOverview = () => {
   const { id } = useParams();
@@ -30,7 +80,9 @@ const CourseOverview = () => {
   const [isPurchased, setIsPurchased] = useState(true);
   const [averageRating, setAverageRating] = useState(4.5);
   const [totalReviews, setTotalReviews] = useState(100);
-  const [reviews, setReviews] = useState(mockReviews); // Dùng mock data
+  const [reviews, setReviews] = useState([]); 
+  const [myRating, setMyRating] = useState(null) ;
+  const [myComment, setMyComment] = useState("") ;
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -41,6 +93,12 @@ const CourseOverview = () => {
         setAverageRating(courseRes.data.overview.average_rating)
         setTotalReviews(courseRes.data.overview.total_rating)
         setReviews(courseRes.data.reviews) ;
+        
+        const userCourse = courseRes.data.userCourse ;
+        if(userCourse) {
+          setMyRating(userCourse.rating) ;
+          setMyComment(userCourse.comment) ;
+        }
 
       } catch (err) {
         console.error("Error fetching course:", err);
@@ -51,7 +109,8 @@ const CourseOverview = () => {
     };
 
     fetchCourseDetails();
-  }, [id]);
+  }, [id, myRating, myComment]);
+
 
   if (loading) return <Container sx={{ textAlign: "center", mt: 4 }}><CircularProgress /></Container>;
   if (error) return <Container sx={{ textAlign: "center", mt: 4 }}><Alert severity="error">{error}</Alert></Container>;
@@ -105,6 +164,10 @@ const CourseOverview = () => {
           <Typography variant="h6" sx={{ mt: 4 }}>
             Student Reviews
           </Typography>
+           {isPurchased && <RatingBox 
+           courseId={id} initialRating={myRating} initialReview={myComment} 
+           setMyRating={setMyRating} setMyComment={setMyComment}
+           />}
           {reviews.length === 0 ? (
             <Typography variant="body2" color="text.secondary">
               Chưa có đánh giá nào cho khóa học này.

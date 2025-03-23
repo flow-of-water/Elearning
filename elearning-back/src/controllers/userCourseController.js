@@ -71,6 +71,27 @@ export const createUserCoursesFromCartController = async (req, res) => {
   }
 };
 
+// User review 
+export const updateUserCourseRatingController = async (req,res) => { // PATCH METHOD
+  try {
+    var { courseId, rating, comment } = req.body;
+    if(!comment) comment = null 
+    if(!rating) rating = null
+    
+    const userId = req.user.id ;
+    if (!userId || !courseId) {
+      return res.status(400).json({ error: 'Missing userId or courseIds array' });
+    }
+    const userCourse = await userCourseModel.updateUserCourse(userId,courseId,rating,comment) ;
+    
+    return res.status(200).json({ userCourse });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+
 
 // Lấy danh sách các User_Course của một user
 export const getUserCoursesController = async (req, res) => {
@@ -143,13 +164,15 @@ export const getCourseOverviewController = async(req,res) => {
       "total_rating": 0
     }
     
-
+    var userCourse = null ;
+    if (owned) userCourse = await userCourseModel.getUserCourse(userId,courseId) ;
     course = ImgToBase64(course) ;
     return res.status(200).json({
       course,
       owned, 
       reviews,
-      overview
+      overview,
+      userCourse,
     });
 
 

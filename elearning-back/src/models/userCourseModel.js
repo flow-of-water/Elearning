@@ -14,6 +14,12 @@ export const createUserCourse = async (userId, courseId) => {
   return rows[0];
 };
 
+export const updateUserCourse = async (userId, courseId,rating,comment) => {
+  const query = `UPDATE user_course SET rating = $1, comment = $2 where userid = $3 and courseid = $4`
+  const { rows } = await db.query(query, [rating,comment,userId,courseId]);
+  return rows[0];
+}
+
 // Count the number of rows in user_course 
 export const getNumberOfEnrollments = async()=> {
   const result = await db.query("SELECT COUNT(*) FROM user_course") ;
@@ -31,7 +37,7 @@ export const getUserCoursesByUser = async (userId) => {
   return rows;
 };
 
-// Lấy rating của 1 course
+// Lấy ratings của 1 course
 export const getRatingsByCourseId = async (courseId) => {
   const query = `
     SELECT 
