@@ -7,6 +7,8 @@ const GoogleLoginButton = () => {
     // Redirect user đến backend để login
     window.location.href = process.env.REACT_APP_BACKEND_URL+'/api/auth_google/google';
     // window.location.href = 'http://localhost:5000/api/auth/google';
+
+    console.log("Backend URL:", process.env.REACT_APP_BACKEND_URL);
   };
 
   return (
