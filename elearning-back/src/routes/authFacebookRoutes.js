@@ -9,7 +9,8 @@ dotenv.config();
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: '/api/auth_facebook/facebook/callback',
+    // callbackURL: '/api/auth_facebook/facebook/callback',
+    callbackURL: 'https://elearning-be-water.onrender.com/api/auth_facebook/facebook/callback',
     profileFields: ['id', 'displayName', 'emails']
   },
   async (accessToken, refreshToken, profile, done) => {
