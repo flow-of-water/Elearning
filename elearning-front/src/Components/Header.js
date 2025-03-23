@@ -4,13 +4,11 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { CartContext } from "../Context/CartContext";
 import { Link } from "react-router-dom";
 import SearchBar from './SearchBar'
-import { useLocation } from 'react-router-dom';
 
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
   const { cartItems } = useContext(CartContext);
-  const location = useLocation();
 
 
   useEffect(() => {
@@ -21,7 +19,7 @@ export default function Header() {
       setIsLoggedIn(true);
       setUsername(storedUsername);
     }
-  }, [location]); // Nếu không có, OAuth Google -> Header hiển thị vẫn chưa đăng nhập, phải F5 
+  }, []); 
 
   const handleLogout = () => {
     localStorage.removeItem("token");

@@ -16,7 +16,9 @@ export default function GoogleLoginSuccess() {
       localStorage.setItem('username', username);
       localStorage.setItem('userId' , userid) ;
       localStorage.setItem('userRole' , role) ;
-      navigate('/');
+      // navigate('/');   // Điều hướng kiểu này có thể không re-render lại Header -> hiển thị chưa login
+                          // Lúc đó lại phải thêm location vào useEffect của Header
+      window.location.href = '/'; // Reload toàn bộ trang web
     }
   }, []);
 
