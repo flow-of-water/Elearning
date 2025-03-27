@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { createUser, getUserByUsername, findOrCreateUser } from "../models/userModel.js";
+import { createUser, getUserByUsername, findOrCreateUser , updateUserPassword, getUserById } from "../models/userModel.js";
 
 const saltRounds = 10;
 const jwtSecret = process.env.JWT_SECRET || "your_jwt_secret";
@@ -36,11 +36,38 @@ export const login = async (req, res) => {
   }
 };
 
+// Change Password 
+export const changePassword = async (req, res) => {
+  const userId = req.user.id ;
+  const { currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User don't exists" });
+    }
+
+    // Kiểm tra mật khẩu cũ
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    await updateUserPassword(userId, hashedPassword);
+
+    res.status(200).json({ message: 'Password was changed' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error when changing password', error });
+  }
+}
+
 
 // ___ OAuth ___
-// Google
-export const googleCallback = async (req, res) => {
-  const user = await findOrCreateUser(req.user); // req.user chính là Googleuser 
+// Google and Facebook
+export const OAuthCallback = async (req, res) => {
+  const user = await findOrCreateUser(req.user); // req.user chính là Googleuser Hoặc Facebookuser
   const token = jwt.sign(
     {
       id: user.id,
@@ -52,18 +79,4 @@ export const googleCallback = async (req, res) => {
   );
 
   res.redirect(process.env.FRONT_END_URL + `/login/success?token=${token}&username=${user.username}&userid=${user.id}&role=${user.role}`);
-};
-export const facebookCallback = async(req, res) => {
-  const user = await findOrCreateUser(req.user);
-  const token = jwt.sign(
-    {
-      id: user.id,
-      username: user.username,
-      role: user.role,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: '48h' }
-  );
-
-  res.redirect(`${process.env.FRONT_END_URL}/login/success?token=${token}&username=${user.username}&userid=${user.id}&role=${user.role}`);
 };

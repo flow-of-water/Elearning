@@ -13,6 +13,17 @@ export const authMiddleware = (req, res, next) => {
   }
 };
 
+export const authMiddlewareWithoutError = (req, res, next) => {
+  const token = req.header("Authorization");
+  if (token) {
+    try {
+      const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
+      req.user = decoded;
+    } catch (err) { }
+  }
+  next();
+}
+
 export const adminMiddleware = (req, res, next) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Admin access required" });

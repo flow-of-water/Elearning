@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
 import dotenv from 'dotenv';
 import express from 'express';
-import { facebookCallback } from '../controllers/authController.js';
+import { OAuthCallback } from '../controllers/authController.js';
 
 dotenv.config();
 
@@ -31,7 +31,7 @@ router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }))
 
 router.get('/facebook/callback',
   passport.authenticate('facebook', { session: false, failureRedirect: '/login' }),
-  facebookCallback
+  OAuthCallback
 );
 
 export default router;

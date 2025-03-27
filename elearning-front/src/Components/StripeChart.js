@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
-import { Box, Typography, CircularProgress, Grid, Paper } from "@mui/material";
+import { Box, Typography, Grid, Paper } from "@mui/material";
 import axiosInstance from "../Api/axiosInstance";
+import CircularLoading from "./Loading";
 
 const RevenueChart = () => {
     const [dataPayment, setDataPayment] = useState([]);
@@ -13,8 +14,8 @@ const RevenueChart = () => {
         async function fetchData() {
             try {
                 const response = await axiosInstance.get("/payments/stats");
-                setDataPayment(response.data.revenueByDay);
-                setDataCustomer(response.data.customersByDay);
+                setDataPayment(response.data.revenueByDay.reverse()); // Đảo ngược lại data mới đúng
+                setDataCustomer(response.data.customersByDay.reverse()); // Maybe ?
                 setLoading(false);
             }
             catch (error) {
@@ -26,7 +27,7 @@ const RevenueChart = () => {
         fetchData();
     }, []);
 
-    if (loading) return <CircularProgress />;
+    if (loading) return <CircularLoading />;
     if (error) return null;
 
     return (

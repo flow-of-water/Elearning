@@ -148,16 +148,18 @@ export const getCoursesController = async (req, res) => {
 
 export const getCourseOverviewController = async(req,res) => {
   try {
-    const userId = req.user.id ;
+    const userId = req?.user?.id ;
     const { courseId } = req.params ;
-    if (!userId || !courseId) {
-      return res.status(400).json({ error: 'Missing userId or courseId' });
+    if (!courseId) {
+      return res.status(400).json({ error: 'Missing CourseId' });
     }
 
     var course = await courseModel.getCourseById(courseId) ;
-    const owned = await userCourseModel.checkUserCourseExists(userId,courseId) ;
+    var owned = null ;
     const reviews = await userCourseModel.getRatingsByCourseId(courseId);
     var overview = await userCourseModel.getOverviewRatingByCourseId(courseId) ;
+    if(userId) owned= await userCourseModel.checkUserCourseExists(userId,courseId) ;
+
     if(!overview) overview ={
       "courseid": courseId,
       "average_rating": null,

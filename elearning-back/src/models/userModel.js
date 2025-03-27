@@ -54,6 +54,10 @@ export const updateUser = async (id, name, password, role) => {
   return result.rows[0];
 };
 
+export const updateUserPassword = async (userId, hashedPassword) => {
+  return db.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, userId]);
+};
+
 export const updateUserRole = async (id, role) => {
   const query = `
     UPDATE users

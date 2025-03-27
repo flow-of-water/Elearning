@@ -34,7 +34,7 @@ const Comments = ({courseId}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content || !userId || !courseId) {
-      alert('Vui lòng điền đầy đủ thông tin.');
+      alert('Please fill all information');
       return;
     }
     try {

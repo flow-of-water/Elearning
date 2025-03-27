@@ -33,7 +33,10 @@ app.get("/",(req,res)=> {
   res.send("Backend of The Last Water Bender is working. I'll teach you anything you want !") ;
 })
 
+// WEBHOOK
 app.use('/webhook',stripeRoutes);
+
+// API
 app.use("/api/auth", authRoutes);
 app.use('/api/auth_google',authGoogleRoutes); 
 app.use('/api/auth_facebook',authFacebookRoutes) ;

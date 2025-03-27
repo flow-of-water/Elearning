@@ -5,6 +5,30 @@ export const getAllComments = async () => {
     return res.rows;
 };
 
+export const getComments = async (offset, limit) => {
+  try {
+      const commentsQuery = `
+          SELECT comment_id, user_id, course_id, content, created_at 
+          FROM comments
+          ORDER BY created_at DESC
+          LIMIT $1 OFFSET $2;
+      `;
+      const commentsResult = await db.query(commentsQuery, [limit, offset]);
+
+      const totalCommentsQuery = `SELECT COUNT(*) FROM comments;`;
+      const totalCommentsResult = await db.query(totalCommentsQuery);
+
+      // Return the comments and the total count
+      return {
+          comments: commentsResult.rows,
+          totalComments: parseInt(totalCommentsResult.rows[0].count),
+      };
+  } catch (error) {
+      console.error("Error fetching comments from the database:", error);
+      throw error;
+  }
+};
+
 export const createComment = async (user_id, course_id, content) => {
     const res = await db.query(
         'INSERT INTO comments (user_id, course_id, content) VALUES ($1, $2, $3) RETURNING *',

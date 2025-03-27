@@ -83,6 +83,8 @@ const CourseOverview = () => {
   const [reviews, setReviews] = useState([]); 
   const [myRating, setMyRating] = useState(null) ;
   const [myComment, setMyComment] = useState("") ;
+  const token = localStorage.getItem("token") ;
+
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -142,21 +144,21 @@ const CourseOverview = () => {
           </Typography>
 
           {isPurchased ? (
-            <Button variant="contained" color="success" sx={{ mt: 3 }} onClick={() => navigate(`/courses/${id}`)}>
+            <Button variant="contained" color="success" sx={{ mt: 3, mr: 2 }} onClick={() => navigate(`/courses/${id}`)}>
               Go to Course
             </Button>
-          ) : (
+          ) : token &&(
             <>
               <Button variant="contained" color="primary" sx={{ mt: 3, mr: 2 }} onClick={handleAddToCart}>
                 Add to Cart
               </Button>
-              <Button variant="outlined" color="secondary" sx={{ mt: 3 }} component={Link} to="/cart">
+              <Button variant="outlined" color="secondary" sx={{ mt: 3, mr: 2 }} component={Link} to="/cart">
                 Go to Cart
               </Button>
             </>
           )}
 
-          <Button variant="contained" color="secondary" sx={{ mt: 3, ml: 2 }} component={Link} to="/courses">
+          <Button variant="contained" color="secondary" sx={{ mt: 3 }} component={Link} to="/courses">
             Back to Courses
           </Button>
 

@@ -2,7 +2,7 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import dotenv from 'dotenv';
 import express from "express";
-import { googleCallback } from '../controllers/authController.js';
+import { OAuthCallback } from '../controllers/authController.js';
 
 
 dotenv.config();
@@ -34,7 +34,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 router.get('/google/callback',
     passport.authenticate('google', { session: false, failureRedirect: '/login' }),
-    googleCallback
+    OAuthCallback
 );
 
 export default router ;

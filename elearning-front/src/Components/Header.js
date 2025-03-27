@@ -8,24 +8,30 @@ import SearchBar from './SearchBar'
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [role, setRole] = useState("");
   const { cartItems } = useContext(CartContext);
 
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const storedUsername = localStorage.getItem("username");
+    const storedRole = localStorage.getItem("userRole");
 
     if (token && storedUsername) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
+      setRole(storedRole);
     }
-  }, []); 
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("userRole");
     setIsLoggedIn(false);
     setUsername("");
+    setRole("");
+    window.location.href = '/';
   };
 
   return (
@@ -39,6 +45,9 @@ export default function Header() {
         <SearchBar />
         {/* Navigation */}
         <Box sx={{ display: "flex", gap: 2 }}>
+          {isLoggedIn && (role == 'admin') && <Button
+            color="inherit" component={Link} to="/admin"
+          >Admin</Button>}
           <Button color="inherit" component={Link} to="/courses">Courses</Button>
           {/* <Button color="inherit" component={Link} to="/about">About</Button>
           <Button color="inherit" component={Link} to="/contact">Contact</Button> */}
@@ -56,7 +65,10 @@ export default function Header() {
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
-              <Typography variant="body1" sx={{ display: "flex", alignItems: "center" }}>Hello, <strong>{username}</strong> 👋</Typography>
+
+              <Button color="inherit" component={Link} to="/profile">
+                <Typography variant="body1" sx={{ display: "flex", alignItems: "center",textTransform: "none", }}>Hello, <strong>{username}</strong> 👋</Typography>
+              </Button>
               <Button color="inherit" onClick={handleLogout}>Logout</Button>
             </>
           ) : (

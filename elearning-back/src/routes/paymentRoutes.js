@@ -6,5 +6,7 @@ const router = express.Router();
 
 // Route tạo PaymentIntent
 router.post('/create-payment-intent',authMiddleware, createPaymentIntent);
+
 router.get("/stats",authMiddleware,adminMiddleware,setStripeStatsController);
+
 export default router;
