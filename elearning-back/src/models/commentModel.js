@@ -42,6 +42,20 @@ export const deleteComment = async (id) => {
     return res.rowCount > 0;
 };
 
+export const updateComment = async (commentId, content) => {
+  try {
+    const res = await db.query(
+      `UPDATE comments SET content = $1 WHERE comment_id = $2 RETURNING *`,
+      [content, commentId]
+    );
+    return res.rows[0];
+  } catch (err) {
+    console.error("Error updating comment:", err);
+    throw err;
+  }
+};
+
+
 export const getDetailCommentsByCourseId = async (id) => {
     const query = `
     SELECT

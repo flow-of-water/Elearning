@@ -51,6 +51,25 @@ export const createComment = async (req, res) => {
     }
 };
 
+export const editCommentController = async (req, res) => {
+    const { commentId } = req.params;
+    const { content } = req.body;
+  
+    if (!content) {
+      return res.status(400).json({ message: "Content is required" });
+    }
+  
+    try {
+      const updatedComment = await commentModel.updateComment(commentId, content);
+      if (!updatedComment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      res.json(updatedComment);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating comment" });
+    }
+  };
+
 // Xóa bình luận
 export const deleteCommentController = async (req, res) => {
     const { id } = req.params;

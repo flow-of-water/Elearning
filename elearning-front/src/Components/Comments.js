@@ -8,14 +8,17 @@ import {
   ListItem,
   ListItemText,
   Paper,
+  IconButton,
 } from '@mui/material';
+import { Delete, Edit, Save, Close } from '@mui/icons-material';
 import axiosInstance from '../Api/axiosInstance';
-import { useParams } from 'react-router-dom';
 
-const Comments = ({courseId}) => {
+const Comments = ({ courseId }) => {
   const [comments, setComments] = useState([]);
   const [content, setContent] = useState('');
   const [userId, setUserId] = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingContent, setEditingContent] = useState('');
 
   const fetchComments = async () => {
     try {
@@ -25,11 +28,11 @@ const Comments = ({courseId}) => {
       console.error(err);
     }
   };
+
   useEffect(() => {
-    setUserId(localStorage.getItem('userId')) ;
+    setUserId(localStorage.getItem('userId'));
     fetchComments();
   }, []);
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,6 +47,38 @@ const Comments = ({courseId}) => {
       fetchComments();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleDelete = async (commentId) => {
+    try {
+      await axiosInstance.delete(`/comments/${commentId}`);
+      fetchComments();
+    } catch (err) {
+      console.error('Error deleting comment:', err);
+    }
+  };
+
+  const handleEdit = (commentId, content) => {
+    setEditingCommentId(commentId);
+    setEditingContent(content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingContent('');
+  };
+
+  const handleSaveEdit = async (commentId) => {
+    try {
+      await axiosInstance.patch(`/comments/${commentId}`, {
+        content: editingContent,
+      });
+      setEditingCommentId(null);
+      setEditingContent('');
+      fetchComments();
+    } catch (err) {
+      console.error('Error updating comment:', err);
     }
   };
 
@@ -80,13 +115,70 @@ const Comments = ({courseId}) => {
                     variant="body2"
                     color="text.primary"
                   >
-                    {comment.username} 
+                    {comment.username}
                   </Typography>
                   {' — '}
                   {new Date(comment.created_at).toLocaleString()}
                 </>
               }
-              secondary={comment.content}
+              secondary={
+                <>
+                  {editingCommentId === comment.comment_id ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        multiline
+                        rows={2}
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                      />
+                      <Box mt={1}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => handleSaveEdit(comment.comment_id)}
+                          startIcon={<Save />}
+                          sx={{ mr: 1 }}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={handleCancelEdit}
+                          startIcon={<Close />}
+                        >
+                          Cancel
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <>
+                      {comment.content}
+                      {comment.user_id == userId && (
+                        <>
+                          <IconButton
+                            onClick={() =>
+                              handleEdit(comment.comment_id, comment.content)
+                            }
+                            aria-label="edit"
+                          >
+                            <Edit />
+                          </IconButton>
+                          <IconButton
+                            edge="end"
+                            aria-label="delete"
+                            onClick={() => handleDelete(comment.comment_id)}
+                          >
+                            <Delete />
+                          </IconButton>
+                        </>
+                      )}
+                    </>
+                  )}
+                </>
+              }
             />
           </ListItem>
         ))}
