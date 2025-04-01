@@ -42,9 +42,9 @@ export const getDetailCommentsByCourseIdController = async (req, res) => {
 
 // Tạo bình luận mới
 export const createComment = async (req, res) => {
-    const { user_id, course_id, content } = req.body;
+    const { user_id, course_id, content, parent_comment_id = null } = req.body;
     try {
-        const newComment = await commentModel.createComment(user_id, course_id, content);
+        const newComment = await commentModel.createComment(user_id, course_id, content,parent_comment_id);
         res.status(201).json(newComment);
     } catch (error) {
         res.status(500).json({ error: error.message });

@@ -27,6 +27,25 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
+
+    // const syncCartAfterLogin = async () => {
+    //   const userId = localStorage.getItem('userId');
+    //   if (!userId) return;
+
+    //   try {
+    //     const res = await axiosInstance.get(`/user-course/user`);
+    //     const purchasedCourses = res.data.map(c => c.course_id);
+
+    //     const updatedCart = cartItems.filter(item => !purchasedCourses.includes(item.id));
+    //     if (updatedCart.length !== cartItems.length) {
+    //       setCartItems(updatedCart);
+    //     }
+    //   } catch (error) {
+    //     console.error("Failed to sync cart:", error);
+    //   }
+    // };
+
+    // syncCartAfterLogin(); 
   }, [cartItems]);
 
   useEffect(() => {

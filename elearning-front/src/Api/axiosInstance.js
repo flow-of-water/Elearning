@@ -29,7 +29,7 @@ axiosInstance.interceptors.response.use(
   },
   (error) => {
     if (error.response) {
-      console.error("Lỗi từ API:", error.response.data);
+      console.error("Error from API:", error.response.data);
 
       if (error.response.status === 401) {
         localStorage.removeItem("token");

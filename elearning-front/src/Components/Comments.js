@@ -10,7 +10,7 @@ import {
   Paper,
   IconButton,
 } from '@mui/material';
-import { Delete, Edit, Save, Close } from '@mui/icons-material';
+import { Delete, Edit, Save, Close, Reply } from '@mui/icons-material';
 import axiosInstance from '../Api/axiosInstance';
 
 const Comments = ({ courseId }) => {
@@ -19,6 +19,8 @@ const Comments = ({ courseId }) => {
   const [userId, setUserId] = useState('');
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingContent, setEditingContent] = useState('');
+  const [replyingCommentId, setReplyingCommentId] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
 
   const fetchComments = async () => {
     try {
@@ -47,6 +49,23 @@ const Comments = ({ courseId }) => {
       fetchComments();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleReplySubmit = async (parentId) => {
+    if (!replyContent.trim()) return;
+    try {
+      await axiosInstance.post('/comments', {
+        user_id: userId,
+        course_id: courseId,
+        content: replyContent,
+        parent_comment_id: parentId,
+      });
+      setReplyingCommentId(null);
+      setReplyContent('');
+      fetchComments();
+    } catch (err) {
+      console.error('Error replying:', err);
     }
   };
 
@@ -82,6 +101,110 @@ const Comments = ({ courseId }) => {
     }
   };
 
+  const renderComments = (parentId = null, level = 0) => {
+    return comments
+      .filter((c) => c.parent_comment_id === parentId)
+      .map((comment) => (
+        <Box key={comment.id} sx={{ ml: level * 4 }}>
+          <ListItem alignItems="flex-start">
+            <ListItemText
+              primary={
+                <Typography variant="body2" color="text.primary">
+                  {comment.username} — {new Date(comment.created_at).toLocaleString()}
+                </Typography>
+              }
+              secondary={
+                <>
+                  {editingCommentId === comment.id ? (
+                    <>
+                      <TextField
+                        fullWidth
+                        multiline
+                        value={editingContent}
+                        onChange={(e) => setEditingContent(e.target.value)}
+                      />
+                      <Box mt={1}>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          onClick={() => handleSaveEdit(comment.id)}
+                          startIcon={<Save />}
+                          sx={{ mr: 1 }}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={handleCancelEdit}
+                          startIcon={<Close />}
+                        >
+                          Cancel
+                        </Button>
+                      </Box>
+                    </>
+                  ) : (
+                    <>
+                      {comment.content}
+                      <Box>
+                        {!comment.parent_comment_id && (
+                          <IconButton
+                            size="small"
+                            onClick={() => setReplyingCommentId(comment.id)}
+                          >
+                            <Reply fontSize="small" />
+                          </IconButton>
+                        )}
+                        {comment.user_id == userId && (
+                          <>
+                            <IconButton
+                              onClick={() => handleEdit(comment.id, comment.content)}
+                              size="small"
+                            >
+                              <Edit fontSize="small" />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => handleDelete(comment.id)}
+                              size="small"
+                            >
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          </>
+                        )}
+                      </Box>
+                    </>
+                  )}
+                </>
+              }
+            />
+          </ListItem>
+
+          {replyingCommentId === comment.id && (
+            <Box sx={{ ml: 4, mb: 2 }}>
+              <TextField
+                fullWidth
+                multiline
+                rows={2}
+                value={replyContent}
+                onChange={(e) => setReplyContent(e.target.value)}
+                placeholder="Enter reply..."
+              />
+              <Button
+                size="small"
+                variant="contained"
+                sx={{ mt: 1 }}
+                onClick={() => handleReplySubmit(comment.id)}
+              >
+                Send Reply
+              </Button>
+            </Box>
+          )}
+
+          {renderComments(comment.id, level + 1)}
+        </Box>
+      ));
+  };
+
   return (
     <Box>
       <Paper sx={{ p: 2, mb: 4 }} component="form" onSubmit={handleSubmit}>
@@ -101,87 +224,11 @@ const Comments = ({ courseId }) => {
           color="primary"
           sx={{ mt: 2 }}
         >
-          Send
+          Send comment
         </Button>
       </Paper>
       <List>
-        {comments.map((comment) => (
-          <ListItem key={comment.comment_id} alignItems="flex-start">
-            <ListItemText
-              primary={
-                <>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    {comment.username}
-                  </Typography>
-                  {' — '}
-                  {new Date(comment.created_at).toLocaleString()}
-                </>
-              }
-              secondary={
-                <>
-                  {editingCommentId === comment.comment_id ? (
-                    <>
-                      <TextField
-                        fullWidth
-                        variant="outlined"
-                        multiline
-                        rows={2}
-                        value={editingContent}
-                        onChange={(e) => setEditingContent(e.target.value)}
-                      />
-                      <Box mt={1}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => handleSaveEdit(comment.comment_id)}
-                          startIcon={<Save />}
-                          sx={{ mr: 1 }}
-                        >
-                          Save
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={handleCancelEdit}
-                          startIcon={<Close />}
-                        >
-                          Cancel
-                        </Button>
-                      </Box>
-                    </>
-                  ) : (
-                    <>
-                      {comment.content}
-                      {comment.user_id == userId && (
-                        <>
-                          <IconButton
-                            onClick={() =>
-                              handleEdit(comment.comment_id, comment.content)
-                            }
-                            aria-label="edit"
-                          >
-                            <Edit />
-                          </IconButton>
-                          <IconButton
-                            edge="end"
-                            aria-label="delete"
-                            onClick={() => handleDelete(comment.comment_id)}
-                          >
-                            <Delete />
-                          </IconButton>
-                        </>
-                      )}
-                    </>
-                  )}
-                </>
-              }
-            />
-          </ListItem>
-        ))}
+        {renderComments()}
       </List>
     </Box>
   );
