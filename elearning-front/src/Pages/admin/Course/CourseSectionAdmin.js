@@ -40,7 +40,7 @@ const AdminCourseSections = () => {
     try {
       const response = await axiosInstance.post(
         "/course_sections",
-        { name, description, video_link: videoLink, course_id: id , order_index :1}
+        { name, description, video_link: videoLink, course_id: id , order_index :orderIndex}
       );
       setSections([...sections, response.data]);
       setSnackbarMessage("Section added successfully!");

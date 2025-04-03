@@ -1,34 +1,19 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Box, TextField, InputAdornment, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import axiosInstance from "../Api/axiosInstance"
-import { useNavigate, useLocation } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import { SearchContext } from "./../Context/SearchContext.js"
 
 const SearchBar = ({ placeholder, onSearch }) => {
+  const { updatePage , updateSearchQuery } = useContext(SearchContext);
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleSearch = async () => {
-    if (query.trim() === '') {
-      navigate('/courses');
-      return;
-    }
-    try {
-      const response = await axiosInstance.get(`/courses/search?q=${query.trim()}`);
-      const data = await response.data;
-
-    // Nếu đã ở CoursesPage, chỉ cập nhật state
-    if (location.pathname === "/courses") {
-      navigate("/courses", { state: { searchResults: data }, replace: true });
-    } else {
-      // Nếu đang ở trang khác, chuyển hướng sang CoursesPage
-      navigate("/courses", { state: { searchResults: data } });
-    }
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-    }
+    updateSearchQuery(query.trim());
+    updatePage(1) ;
+    navigate("/courses") ;
   };
 
 

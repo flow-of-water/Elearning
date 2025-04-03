@@ -25,6 +25,11 @@ function ImgToBase64(course) {
 
 export const getCoursesController = async (req, res) => {
   try {
+    var userId = req?.user?.id ;
+    var { q } = req.query;
+    if(!q) q="";
+    if(!userId) userId=null;
+
     // Lấy page và limit từ query params, với giá trị mặc định
     const page = req.query.page? parseInt(req.query.page) : 1;
     const limit = 6;
@@ -32,7 +37,7 @@ export const getCoursesController = async (req, res) => {
     // Cal offset
     const offset = (page - 1) * limit;
 
-    var { courses, totalItems } = await getPaginatedCourses(limit, offset);
+    var { courses, totalItems } = await getPaginatedCourses(limit, offset, userId, q);
     courses = ImgArrayToBase64(courses)
 
     const totalPages = Math.ceil(totalItems / limit);
@@ -40,8 +45,8 @@ export const getCoursesController = async (req, res) => {
     // Rating for each course 
     for (const course of courses) {
       const overview = await getOverviewRatingByCourseId(course.id);
-      course.average_rating = overview.average_rating;
-      course.total_rating = overview.total_rating;
+      course.average_rating = overview?.average_rating;
+      course.total_rating = overview?.total_rating;
     }
     res.json({
       courses,

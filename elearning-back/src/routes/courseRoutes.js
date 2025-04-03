@@ -1,6 +1,6 @@
 import express from "express";
 import { getCoursesController, getCourseByIdController, updateCourseController, addCourseController, deleteCourseController, getCoursesBySearch } from "../controllers/courseController.js";
-import { authMiddleware, adminMiddleware } from "../middleware/authorize.js";  
+import { authMiddleware, adminMiddleware, authMiddlewareWithoutError } from "../middleware/authorize.js";  
 import multer from "multer";
 
 const router = express.Router();
@@ -11,7 +11,7 @@ const upload = multer({ storage });
 // Search khóa học
 router.get("/search", getCoursesBySearch) ;
 
-router.get("/", getCoursesController);
+router.get("/",authMiddlewareWithoutError, getCoursesController);
 // Lấy thông tin khóa học theo ID
 router.get("/:id", authMiddleware, getCourseByIdController);
 

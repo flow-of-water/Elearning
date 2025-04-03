@@ -6,7 +6,6 @@ import axiosInstance from "../../../Api/axiosInstance"
 const CourseAdmin = () => {
   const [courses, setCourses] = useState([]);
   const [page, setPage] = useState(1);
-  const [pageSize] = useState(6);
   const [pageCount, setPageCount] = useState(1);
 
   useEffect(() => {

@@ -5,6 +5,10 @@ export const CartContext = createContext()
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(localStorage.getItem('cartItems') ? JSON.parse(localStorage.getItem('cartItems')) : [])
 
+  const setCart = (items) => {
+    setCartItems(items) ;
+  }
+
   const addToCart = (item) => {
     const isItemInCart = cartItems.find((cartItem) => cartItem.id === item.id);
 
@@ -26,26 +30,7 @@ export const CartProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
-
-    // const syncCartAfterLogin = async () => {
-    //   const userId = localStorage.getItem('userId');
-    //   if (!userId) return;
-
-    //   try {
-    //     const res = await axiosInstance.get(`/user-course/user`);
-    //     const purchasedCourses = res.data.map(c => c.course_id);
-
-    //     const updatedCart = cartItems.filter(item => !purchasedCourses.includes(item.id));
-    //     if (updatedCart.length !== cartItems.length) {
-    //       setCartItems(updatedCart);
-    //     }
-    //   } catch (error) {
-    //     console.error("Failed to sync cart:", error);
-    //   }
-    // };
-
-    // syncCartAfterLogin(); 
+    localStorage.setItem("cartItems", JSON.stringify(cartItems)); 
   }, [cartItems]);
 
   useEffect(() => {
@@ -59,6 +44,7 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         cartItems,
+        setCart,
         addToCart,
         removeFromCart,
         clearCart,

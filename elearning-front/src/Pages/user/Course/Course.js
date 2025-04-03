@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -15,22 +14,24 @@ import { Link } from "react-router-dom";
 import axiosInstance from "../../../Api/axiosInstance";
 import CourseCard from "../../../Components/CourseCard";
 import { CartContext } from "../../../Context/CartContext";
+import { useSearch, SearchContext } from "../../../Context/SearchContext";
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const location = useLocation();
-  const [page, setPage] = useState(1);
-  const [pageSize] = useState(6);
   const [pageCount, setPageCount] = useState(1);
-
+  // const { searchQuery } = useSearch();
+  const {searchQuery, currentPage, updatePage} = useContext(SearchContext) ;
   const { addToCart } = useContext(CartContext);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axiosInstance.get(`/courses?page=${page}`);
+        let url = `/courses?page=${currentPage}`;
+        if (searchQuery) url += `&q=${searchQuery}`;
+
+        const response = await axiosInstance.get(url);
         setCourses(response.data.courses);
         setPageCount(response.data.totalPages)
       } catch (err) {
@@ -40,16 +41,12 @@ const CoursesPage = () => {
         setLoading(false);
       }
     };
-    if (location.state?.searchResults) {
-      setCourses(location.state.searchResults);
-      setLoading(false);
-    } else {
-      fetchCourses();
-    }
-  }, [location.state, page]);
+
+    fetchCourses();
+  }, [currentPage,searchQuery]);
 
   const handlePageChange = (event, value) => {
-    setPage(value);
+    updatePage(value);
   };
 
   if (loading) {
@@ -86,7 +83,7 @@ const CoursesPage = () => {
       {courses.length != 0 &&
         <Pagination
           count={pageCount}
-          page={page}
+          page={currentPage}
           onChange={handlePageChange}
           color="primary"
           sx={{ display: "flex", justifyContent: "center", mt: 4 }}

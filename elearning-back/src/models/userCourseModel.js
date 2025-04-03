@@ -59,7 +59,7 @@ export const getOverviewRatingByCourseId = async (courseId) => {
         ROUND(AVG(uc.rating), 2) AS average_rating,
         COUNT(uc.rating) AS total_rating
     FROM user_course uc
-    WHERE uc.courseid = $1 -- Thay 1 bằng courseid bạn muốn lọc
+    WHERE uc.courseid = $1 
     GROUP BY uc.courseid;
 `;
   const { rows } = await db.query(query, [courseId]);

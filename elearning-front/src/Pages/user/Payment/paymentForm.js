@@ -66,7 +66,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="md">
       <Box mt={4}>
         <Typography variant="h5" gutterBottom>
           Payment Form

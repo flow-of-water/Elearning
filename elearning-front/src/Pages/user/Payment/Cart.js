@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import axiosInstance from '../../../Api/axiosInstance.js';
 import { CartContext } from '../../../Context/CartContext.js';
 import {
   Container,
@@ -10,12 +11,45 @@ import {
   Divider,
   Box,
   Paper,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 const CartPage = () => {
-  const { cartItems, removeFromCart, clearCart, getCartTotal } = useContext(CartContext);
+  const { cartItems, setCart, removeFromCart, clearCart, getCartTotal } = useContext(CartContext);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [removedItems, setRemovedItems] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserCourses = async () => {
+      try {
+        const res = await axiosInstance.get('/user-course/user'); 
+        const userCourses = res.data || [];
+        const ownedCourseIds = userCourses.map((c) => c.id || c.courseId);
+
+        const removedThings = [];
+        const keptThings = []
+        cartItems.forEach((item) => {
+          if (ownedCourseIds.includes(item.id)) removedThings.push(item.name);
+          else keptThings.push(item) ;
+        });
+  
+        if (removedThings.length > 0) {
+          setRemovedItems(removedThings);
+          setCart(keptThings);
+          setOpenAlert(true);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user courses:', error);
+      }
+    };
+
+    if (cartItems.length > 0) {
+      fetchUserCourses();
+    }
+  }, [cartItems]);
 
   if (!cartItems || cartItems.length === 0) {
     return (
@@ -39,7 +73,6 @@ const CartPage = () => {
     );
   }
 
-
   return (
     <Container sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom align="center">
@@ -62,7 +95,7 @@ const CartPage = () => {
               >
                 <ListItemText
                   primary={item.name}
-                  secondary={`$${item.price ? item.price : 0} `}
+                  secondary={`$${item.price ? item.price : 0}`}
                 />
               </ListItem>
               <Divider />
@@ -78,8 +111,8 @@ const CartPage = () => {
           }}
         >
           <Typography variant="h6">Total: ${getCartTotal()}</Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Button variant="contained" color="primary" onClick={() => navigate("/payment")}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button variant="contained" color="primary" onClick={() => navigate('/payment')}>
               Payment
             </Button>
             <Button variant="contained" color="error" onClick={clearCart}>
@@ -88,6 +121,19 @@ const CartPage = () => {
           </Box>
         </Box>
       </Paper>
+
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={5000}
+        onClose={() => setOpenAlert(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="info" onClose={() => setOpenAlert(false)}>
+          {removedItems.length > 0
+            ? `Removed already owned courses: ${removedItems.join(', ')}`
+            : 'Some courses were already in your account.'}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

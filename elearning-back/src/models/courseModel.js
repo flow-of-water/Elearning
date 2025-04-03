@@ -10,7 +10,7 @@ export const getNumberOfCourses = async () => {
 export const getCourses = async () => {
   try {
     const result = await db.query("SELECT * FROM courses");
-    return result.rows;  // Trả về thông tin khóa học nếu tìm thấy
+    return result.rows;  
   } catch (err) {
     throw new Error("Error courses");
   }
@@ -20,24 +20,62 @@ export const getCourses = async () => {
 export const getCourseById = async (id) => {
   try {
     const result = await db.query("SELECT * FROM courses WHERE id = $1", [id]);
-    return result.rows[0];  // Trả về thông tin khóa học nếu tìm thấy
+    return result.rows[0];  
   } catch (err) {
     throw new Error("Error retrieving course");
   }
 };
 
 // Paging Course
-export const getPaginatedCourses = async (limit, offset) => {
-  // Truy vấn để lấy danh sách khóa học với limit và offset
-  const coursesQuery = `
+export const getPaginatedCourses = async (limit, offset, userId = null, q = "") => {
+  // Câu truy vấn mặc định
+  let coursesQuery = `
+    SELECT c.*, 
+           CASE WHEN uc.userid IS NOT NULL THEN true ELSE false END AS is_purchased
+    FROM courses c
+    LEFT JOIN user_course uc ON c.id = uc.courseid AND uc.userid = $3
+  `;
+  let queryParams = [limit, offset, userId];
+  if (q.length >= 1) {
+    coursesQuery += `
+      WHERE c.name ILIKE $4 OR c.author ILIKE $4
+    `;
+    queryParams = [limit, offset, userId, `%${q}%`];
+  }
+  // Tiếp tục câu truy vấn cũ với ORDER BY, LIMIT và OFFSET
+  coursesQuery += `
+    ORDER BY c.id
+    LIMIT $1 OFFSET $2
+  `;
+  
+
+  // Nếu không có userId, bỏ qua phần LEFT JOIN và chỉ lấy danh sách khóa học
+  if (!userId && q.length>=1) {
+    coursesQuery = `
+      SELECT * FROM courses
+      WHERE c.name ILIKE $3 OR c.author ILIKE $3
+      ORDER BY id
+      LIMIT $1 OFFSET $2
+    `;
+    queryParams = [limit, offset, `%${q}%`];
+  }
+  else if (!userId && q.length===0) {
+    coursesQuery = `
     SELECT * FROM courses
     ORDER BY id
     LIMIT $1 OFFSET $2
   `;
-  const coursesResult = await db.query(coursesQuery, [limit, offset]);
+  queryParams = [limit, offset];
+  }
+
+  const coursesResult = await db.query(coursesQuery, queryParams);
 
   // Truy vấn để lấy tổng số lượng khóa học
-  const countResult = await db.query('SELECT COUNT(*) FROM courses');
+  const countQuery = q.length >= 1 
+    ? `SELECT COUNT(*) FROM courses WHERE name ILIKE $1 OR author ILIKE $1`
+    : `SELECT COUNT(*) FROM courses`;
+
+  const countResult = await db.query(countQuery, q.length >= 1 ?[`%${q}%`]:null);
   const totalItems = parseInt(countResult.rows[0].count, 10);
 
   return {
@@ -131,11 +169,11 @@ export const deleteCourse = async (id) => {
       [id]
     );
     if (result.rows.length === 0) {
-      return null;  // Không tìm thấy khóa học để xóa
+      return null;  
     }
-    return result.rows[0];  // Trả về khóa học đã bị xóa
+    return result.rows[0];
   } catch (err) {
-    console.error('Error deleting course:', err); // Ghi chi tiết lỗi
+    console.error('Error deleting course:', err); 
     throw new Error("Error deleting course");
   }
 };
