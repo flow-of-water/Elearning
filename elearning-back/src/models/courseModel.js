@@ -177,3 +177,24 @@ export const deleteCourse = async (id) => {
     throw new Error("Error deleting course");
   }
 };
+
+// Tính tổng số tiền các khóa học
+export const getTotalPriceByCourseIds = async (courseIds) => {
+  if (!Array.isArray(courseIds) || courseIds.length === 0) {
+    return 0 ;
+  }
+
+  const query = `
+    SELECT SUM(price) AS total_price
+    FROM courses
+    WHERE id = ANY($1)
+  `;
+
+  try {
+    const result = await db.query(query, [courseIds]);
+    return result.rows[0].total_price || 0;
+  } catch (error) {
+    console.error("Error fetching total price:", error);
+    throw error;
+  }
+};

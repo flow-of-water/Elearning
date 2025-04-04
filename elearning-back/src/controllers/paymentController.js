@@ -1,17 +1,19 @@
 import Stripe from 'stripe';
-import * as userCourseModel from '../models/userCourseModel.js'; // Import các hàm từ model
+import * as userCourseModel from '../models/userCourseModel.js'; 
+import * as courseModel from "../models/courseModel.js";
 import moment from "moment";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createPaymentIntent = async (req, res) => {
   try {
-    const { amount, courseIds } = req.body;
+    const { courseIds } = req.body;
+    var amount = await courseModel.getTotalPriceByCourseIds(courseIds) ;
+    amount = Math.round(amount * 100);
     const userId = req.user.id;
 
-    // Kiểm tra đầu vào
     if (!userId || !Array.isArray(courseIds) || courseIds.length === 0) {
-      return res.status(400).json({ error: 'Thiếu userId hoặc danh sách courseIds không hợp lệ.' });
+      return res.status(400).json({ error: 'Missing userId or invalid list of courseIds.' });
     }
 
     // Xử lý đơn hàng miễn phí

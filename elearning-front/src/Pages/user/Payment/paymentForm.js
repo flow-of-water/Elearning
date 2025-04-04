@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { Container, Typography, Button, Box, CircularProgress } from '@mui/material';
 import axiosInstance from '../../../Api/axiosInstance';
-import {CartContext} from "../../../Context/CartContext.js"
+import { CartContext } from "../../../Context/CartContext.js"
 
 const PaymentForm = ({ totalAmount, courseIds }) => {
   const stripe = useStripe();
@@ -23,8 +23,8 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
       const amountCents = Math.round(totalAmount * 100);
 
       // Gọi backend để tạo PaymentIntent
-      const response = await axiosInstance.post('/payments/create-payment-intent', { 
-        amount: amountCents, userId: 1, courseIds 
+      const response = await axiosInstance.post('/payments/create-payment-intent', {
+        amount: amountCents, courseIds
       });
 
       const data = response.data;
@@ -34,7 +34,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
         setMessage('Order processed as free. Payment succeeded!');
         localStorage.removeItem('cartItems');
         setIsProcessing(false);
-        clearCart() ;
+        clearCart();
         return;
       }
 
@@ -55,7 +55,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
         setMessage('Payment succeeded!');
         localStorage.removeItem('cartItems');
         console.log(result.paymentIntent);
-        clearCart() ;
+        clearCart();
       }
     } catch (error) {
       setMessage('Payment failed. Please try again.');
@@ -75,9 +75,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
           Total: ${totalAmount}
         </Typography>
         <form onSubmit={handleSubmit}>
-          <Box
-            mb={2}
-            p={2}
+          {totalAmount > 0 && <Box mb={2} p={2}
             sx={{ border: '1px solid #ccc', borderRadius: 1 }}
           >
             <CardElement
@@ -92,7 +90,7 @@ const PaymentForm = ({ totalAmount, courseIds }) => {
                 },
               }}
             />
-          </Box>
+          </Box>}
           <Button
             variant="contained"
             color="primary"
