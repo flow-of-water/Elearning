@@ -68,13 +68,14 @@ const CourseAdmin = () => {
         </Table>
       </TableContainer>
 
+      {courses && courses.length &&
       <Pagination
         count={pageCount}
         page={page}
         onChange={handlePageChange}
         color="primary"
         sx={{ display: "flex", justifyContent: "center", mt: 4 }}
-      />
+      />}
     </Container>
   );
 };
