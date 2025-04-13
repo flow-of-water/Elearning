@@ -8,6 +8,7 @@ const CreateCourseAdmin = () => {
   const [instructor, setInstructor] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
+  const [price, setPrice] = useState(0);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -16,9 +17,9 @@ const CreateCourseAdmin = () => {
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-  
+
     try {
-      setThumbnail(file) ;
+      setThumbnail(file);
     } catch (error) {
       console.error("Error compressing image:", error);
     }
@@ -31,6 +32,7 @@ const CreateCourseAdmin = () => {
     formData.append("instructor", instructor);
     formData.append("description", description);
     formData.append("thumbnail", thumbnail);
+    formData.append("price",price);
 
     try {
       const token = localStorage.getItem("token");
@@ -65,8 +67,15 @@ const CreateCourseAdmin = () => {
           <TextField label="Course Name" fullWidth value={name} onChange={(e) => setName(e.target.value)} margin="normal" required />
           <TextField label="Instructor" fullWidth value={instructor} onChange={(e) => setInstructor(e.target.value)} margin="normal" required />
           <TextField label="Description" fullWidth value={description} onChange={(e) => setDescription(e.target.value)} margin="normal" required />
+          <TextField label="Price (e.g. 10.25$)" fullWidth value={price} onChange={(e) => setPrice(e.target.value)} margin="normal" type="number" inputProps={{
+            step: "0.01",
+            min: "0",
+          }} required
+            error={price !== "" && price < 1 && price != 0 && price != "0"}
+            helperText={price !== "" && price < 1 && price !== 0 ? "Price must be 0$ or at least 1$" : ""}
+          />
           <Input type="file" accept="image/*" onChange={handleFileChange} sx={{ mt: 2 }} />
-          <br/>
+          <br />
           <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>Create Course</Button>
         </form>
       </Paper>

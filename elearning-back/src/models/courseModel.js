@@ -149,11 +149,11 @@ export const updateCoursePartial = async (id, updates) => {
 
 
 // Thêm khóa học mới (hỗ trợ lưu thumbnail)
-export const addCourse = async (name, instructor, description, thumbnail) => {
+export const addCourse = async (name, instructor, description, thumbnail, price) => {
   try {
     const result = await db.query(
-      "INSERT INTO courses (name, author, description, thumbnail) VALUES ($1, $2, $3, $4) RETURNING *",
-      [name, instructor, description, thumbnail]
+      "INSERT INTO courses (name, author, description, thumbnail, price) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [name, instructor, description, thumbnail, price]
     );
     return result.rows[0];  // Trả về khóa học đã được thêm
   } catch (err) {

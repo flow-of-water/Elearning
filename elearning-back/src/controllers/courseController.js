@@ -97,8 +97,6 @@ export const getCoursesBySearch = async (req, res) => {
 export const updateCourseController = async (req, res) => {
   const { id } = req.params;
   const updates = req.body ;
-  const { name, author, description } = req.body;
-  const thumbnail = req.file ? req.file.buffer : null;
   if (req.file) {
     updates.thumbnail = req.file.buffer;
   }
@@ -118,10 +116,10 @@ export const updateCourseController = async (req, res) => {
 
 // Thêm khóa học mới
 export const addCourseController = async (req, res) => {
-  const { name, instructor, description } = req.body;
+  const { name, instructor, description, price } = req.body;
   const thumbnail = req.file ? req.file.buffer : null;
   try {
-    const newCourse = await addCourse(name, instructor, description, thumbnail);
+    const newCourse = await addCourse(name, instructor, description, thumbnail, price);
     res.status(201).json(newCourse);  // Trả về khóa học mới vừa được thêm
   } catch (err) {
     console.error(err);

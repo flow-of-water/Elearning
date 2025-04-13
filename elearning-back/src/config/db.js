@@ -6,7 +6,7 @@ dotenv.config();
 var db;
 
 // Local db using localhost
-if (process.env.NODE_ENV === "local") {
+if (process.env.NODE_ENV === "development") {
   db = new pg.Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,

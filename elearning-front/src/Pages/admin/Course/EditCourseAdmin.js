@@ -21,6 +21,7 @@ const EditCourse = () => {
     name: "",
     author: "",
     description: "",
+    price: 0,
   });
   // State lưu file upload mới (nếu có)
   const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -39,6 +40,7 @@ const EditCourse = () => {
           name: data.name || "",
           author: data.author || "",
           description: data.description || "",
+          price: data.price || 0,
         });
         // Giả sử backend trả về thumbnail đã được chuyển sang chuỗi Base64
         if (data.thumbnail) {
@@ -82,6 +84,7 @@ const EditCourse = () => {
       formData.append("name", courseData.name);
       formData.append("author", courseData.author);
       formData.append("description", courseData.description);
+      formData.append("price", courseData.price);
       if (thumbnailFile) {
         formData.append("thumbnail", thumbnailFile);
       }
@@ -90,7 +93,7 @@ const EditCourse = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      navigate(`/admin/courses/${id}`); 
+      navigate(`/admin/courses/${id}`);
     } catch (err) {
       console.error("Error updating course:", err);
       setError("Error updating course.");
@@ -145,6 +148,19 @@ const EditCourse = () => {
             value={courseData.description}
             onChange={handleChange}
             required
+          />
+          <TextField
+            label="Price ($)"
+            name="price"
+            type="number"
+            fullWidth
+            margin="normal"
+            inputProps={{ step: "0.01", min: "0" }}
+            value={courseData.price}
+            onChange={handleChange}
+            required
+            error={courseData.price !== "" && courseData.price < 1 && courseData.price != 0}
+            helperText={courseData.price !== "" && courseData.price < 1 && courseData.price !== 0 ? "Price must be 0 or at least 1" : ""}
           />
           <Typography variant="body1" sx={{ mt: 2 }}>
             Thumbnail:
